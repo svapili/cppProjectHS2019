@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent)
     , fileMenu(nullptr)
     , viewMenu(nullptr)
-    //, currentImage(nullptr)
+    , currentImg(nullptr)
 {
     initUI();
 }
@@ -46,11 +46,11 @@ void MainWindow::initUI()
     mainStatusLabel->setText("Image Info comes here..");
 
     // create actions (as child widget of main window)
-    createActions();
+    makeActions();
 }
 
 // Each menu item represented ad instance of QAction
-void MainWindow::createActions()
+void MainWindow::makeActions()
 {
 
     // create actions, add them to menus
@@ -83,8 +83,8 @@ void MainWindow::createActions()
     connect(saveAsAction, SIGNAL(triggered(bool)), this, SLOT(saveAs()));
     connect(zoomInAction, SIGNAL(triggered(bool)), this, SLOT(zoomIn()));
     connect(zoomOutAction, SIGNAL(triggered(bool)), this, SLOT(zoomOut()));
-    connect(prevAction, SIGNAL(triggered(bool)), this, SLOT(prevImage()));
-    connect(nextAction, SIGNAL(triggered(bool)), this, SLOT(nextImage()));
+    connect(prevAction, SIGNAL(triggered(bool)), this, SLOT(prevImg()));
+    connect(nextAction, SIGNAL(triggered(bool)), this, SLOT(nextImg()));
 
     setupShortcuts();
 }
@@ -104,18 +104,18 @@ void MainWindow::openImage()
 }
 
 
-void MainWindow::showImage(QString path)
+void MainWindow::showImage(QString myPath)
 {
     imageScene->clear();
     imageView->resetMatrix();
-    QPixmap image(path);
-    currentImage = imageScene->addPixmap(image);
+    QPixmap image(myPath);
+    currentImg = imageScene->addPixmap(image);
     imageScene->update();
-    imageView->setSceneRect(image.rect());
-    QString status = QString("%1, %2x%3, %4 Bytes").arg(path).arg(image.width())
-        .arg(image.height()).arg(QFile(path).size());
+    imageView->setSceneRect( image.rect() );
+    QString status = QString("%1, %2x%3, %4 Bytes").arg(myPath).arg( image.width() )
+        .arg(image.height()).arg(QFile( myPath).size() );
     mainStatusLabel->setText(status);
-    currentImagePath = path;
+    currentImgPath = myPath;
 }
 
 void MainWindow::zoomIn()
@@ -128,9 +128,9 @@ void MainWindow::zoomOut()
     imageView->scale(1/1.3, 1/1.3);
 }
 
-void MainWindow::prevImage()
+void MainWindow::prevImg()
 {
-    QFileInfo current(currentImagePath);
+    QFileInfo current(currentImgPath);
     QDir dir = current.absoluteDir();
     QStringList nameFilters;
     nameFilters << "*.png" << "*.bmp" << "*.jpg";
@@ -143,9 +143,9 @@ void MainWindow::prevImage()
     }
 }
 
-void MainWindow::nextImage()
+void MainWindow::nextImg()
 {
-    QFileInfo current(currentImagePath);
+    QFileInfo current(currentImgPath);
     QDir dir = current.absoluteDir();
     QStringList nameFilters;
     nameFilters << "*.png" << "*.bmp" << "*.jpg";
@@ -160,7 +160,7 @@ void MainWindow::nextImage()
 
 void MainWindow::saveAs()
 {
-    if (currentImage == nullptr) {
+    if (currentImg == nullptr) {
         QMessageBox::information(this, "Information", "Nothing to save.");
         return;
     }
@@ -173,7 +173,7 @@ void MainWindow::saveAs()
     if (dialog.exec()) {
         fileNames = dialog.selectedFiles();
         if(QRegExp(".+\\.(png|bmp|jpg)").exactMatch(fileNames.at(0))) {
-            currentImage->pixmap().save(fileNames.at(0));
+            currentImg->pixmap().save(fileNames.at(0));
         } else {
             QMessageBox::information(this, "Information", "Save error: bad format or filename.");
         }

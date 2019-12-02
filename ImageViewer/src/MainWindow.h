@@ -22,7 +22,7 @@ public:
 
 private:
     void initUI();      // init all widgets below
-    void createActions();
+    void makeActions();
     void showImage(QString);
     void setupShortcuts();
 
@@ -30,8 +30,8 @@ private slots:
     void openImage();
     void zoomIn();
     void zoomOut();
-    void prevImage();
-    void nextImage();
+    void prevImg();
+    void nextImg();
     void saveAs();
 
 private:
@@ -56,8 +56,8 @@ private:
     QAction *prevAction;
     QAction *nextAction;
 
-    QString currentImagePath;
-    QGraphicsPixmapItem *currentImage;
+    QString currentImgPath;
+    QGraphicsPixmapItem *currentImg;
 };
 
 #endif // MAINWINDOW_H
