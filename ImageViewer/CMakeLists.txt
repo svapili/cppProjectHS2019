@@ -16,6 +16,14 @@ endif()
 # set build type to Debug/Release
 set(CMAKE_BUILD_TYPE "Debug")
 
+# openCV and Tesseract
+set(OpenCV_DIR "~/opencv/build")
+find_package(OpenCV REQUIRED)
+find_package( Tesseract 4.0 REQUIRED )
+
+# Find the QtWidgets library
+find_package(Qt5Widgets CONFIG REQUIRED)
+find_package(Qt5PrintSupport REQUIRED)      # required by QCustomPlot
 find_package(qtlibs)
 
 # Find includes in corresponding build directories
@@ -25,19 +33,12 @@ set(CMAKE_AUTOMOC ON)
 # Create code from a list of Qt designer ui files
 set(CMAKE_AUTOUIC ON)
 
-# Find the QtWidgets library
-find_package(Qt5Widgets CONFIG REQUIRED)
-find_package(Qt5PrintSupport REQUIRED)      # required by QCustomPlot
-
-# Populate a CMake variable with the sources
+# Populate CMake variable with the sources
 set(APP_SOURCES
     src/MainWindow.cpp
     src/MainWindow.h
-    #src/ui/widget.ui
-    #src/ui/widget.cpp
-    #src/ui/widget.h
-    #src/ui/qcustomplot-source/qcustomplot.cpp
-    #src/ui/qcustomplot-source/qcustomplot.h
+    src/CaptureScreen.cpp
+    src/CaptureScreen.h
 )
 
 # including all cpp/h files in the current directory
@@ -46,19 +47,23 @@ aux_source_directory(. SRC_LIST)
 # Create executable using the specified src
 add_executable(${PROJECT_NAME} src/main.cpp ${APP_SOURCES})
 
-set(APP_INCLUDE_DIRS
-    src/
-    src/ui/
-    #src/ui/qcustomplot-source
-)
-INCLUDE_DIRECTORIES(${APP_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${APP_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS}
+    ${Tesseract_INCLUDE_DIRS} ${LEPTONICA_INCLUDE_DIRS})
 
-# Use the Widgets module from Qt 5
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::PrintSupport)
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${OpenCV_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}/Sources/ui
+    )
 
-# copy textfile
-#file(COPY ekg.txt DESTINATION ${PROJECT_BINARY_DIR})
+# Additional Library Directories
+link_directories( ${OpenCV_LIB_DIR} ${TESSERACT_LIBRARY_DIRS} ${LEPTONICA_LIBRARY_DIRS} )
 
+# link required libs
+target_link_libraries(${PROJECT_NAME} Qt5::Core Qt5::Gui Qt5::Widgets
+    Qt5::PrintSupport ${OpenCV_LIBS} ${Tesseract_LIBRARIES} ${LEPTONICA_LIBRARIES})
+
+# copy pretrained model data from openCV EAST classifier
+file(COPY src/frozen_east_text_detection.pb DESTINATION ${PROJECT_BINARY_DIR})
 
 # Set compile options, enable warnings
 target_compile_options(${PROJECT_NAME} PRIVATE
