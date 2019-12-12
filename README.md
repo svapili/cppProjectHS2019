@@ -24,6 +24,7 @@ The user can save both the image as well as the text.
 * [tessdata](https://github.com/tesseract-ocr/tessdata) - Pretrained data for the LSTM AI model used in Tesseract 4.1.0
 * [opencv2/opencv.hpp](https://github.com/opencv/opencv)
 * [opencv2/dnn.hpp](https://docs.opencv.org/3.4/db/ddc/dnn_2dnn_8hpp.html) - Pretrained EAST DNN model used for text area detection
+* [Frozen East text detection model](https://www.dropbox.com/s/r2ingd0l3zt8hxs/frozen_east_text_detection.tar.gz?dl=1) - pretrained model data. Download and place the .pb file in ImageViewer/src/
 
 ## Authors
 * **Simon Schweizer**
